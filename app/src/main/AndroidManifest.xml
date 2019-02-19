@@ -3,6 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.juicekaaa.fireserver">
 
+    <!--6.0以上需要手动添加权限设置 -->
+    <uses-permission android:name="com.permissions.MYF_BROADCAST" />
+    <permission
+        android:name="com.permissions.MYF_BROADCAST"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.permissions.MYP_BROADCAST" />
+    <permission
+        android:name="com.permissions.MYP_BROADCAST"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.permissions.MYD_BROADCAST" />
+    <permission
+        android:name="com.permissions.MYD_BROADCAST"
+        android:protectionLevel="signature" />
+    <!-- Required  一些系统要求的权限，如访问网络等 -->
+    <uses-permission android:name="com.example.juicekaaa.fireserver.permission.JPUSH_MESSAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -13,13 +31,22 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    <uses-permission android:name="com.permissions.MYF_BROADCAST" />
+
+    <permission
+        android:name="com.permissions.MYF_BROADCAST"
+        android:protectionLevel="signature" />
+
     <application
+        android:name="com.example.juicekaaa.fireserver.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:icon,android:theme,android:allowBackup"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,6 +54,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- 替换原生极光推送接收器 -->
+        <receiver
+            android:name=".jpush.MyReceiver"
+            android:enabled="true"
+            android:exported="false"
+            tools:node="replace">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.REGISTRATION" /> <!-- Required  用户注册SDK的intent -->
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" /> <!-- Required  用户接收SDK消息的intent -->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" /> <!-- Required  用户接收SDK通知栏信息的intent -->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" /> <!-- Required  用户打开自定义通知栏的intent -->
+                <action android:name="cn.jpush.android.intent.CONNECTION" /> <!-- 接收网络变化 连接/断开 since 1.6.3 -->
+                <category android:name="com.example.juicekaaa.fireserver" />
+            </intent-filter>
+        </receiver>
+
+
     </application>
 
 </manifest>

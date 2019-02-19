@@ -1,16 +1,24 @@
 package com.example.juicekaaa.fireserver;
 
+import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.Toast;
 
@@ -18,6 +26,7 @@ import com.bjw.bean.ComBean;
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
 import com.bumptech.glide.Glide;
+import com.example.juicekaaa.fireserver.dialog.SosDialog;
 import com.example.juicekaaa.fireserver.firebox.FireBox;
 import com.example.juicekaaa.fireserver.net.NetCallBack;
 import com.example.juicekaaa.fireserver.net.RequestUtils;
@@ -27,7 +36,7 @@ import com.example.juicekaaa.fireserver.util.EncodingConversionTools;
 import com.example.juicekaaa.fireserver.util.FullVideoView;
 import com.example.juicekaaa.fireserver.util.GetMac;
 import com.example.juicekaaa.fireserver.util.MessageEvent;
-import com.example.juicekaaa.fireserver.util.SVProgressHUD;
+import com.example.juicekaaa.fireserver.util.PayPasswordView;
 import com.loopj.android.http.RequestParams;
 import com.youth.banner.Banner;
 import com.youth.banner.BannerConfig;
@@ -55,12 +64,14 @@ import java.util.List;
 import android_serialport_api.SerialPortFinder;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.jpush.android.api.JPushInterface;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
 public class MainActivity extends AppCompatActivity implements OnBannerListener {
     //    private static final int PORT = 12342;//接收客户端的监听端口
     private static TCPSocket tcpSocket;
-    public String SERVICE_IP = "10.101.208.157";//10.101.208.78   10.101.80.134 10.101.80.100 10.101.208.157 10.101.208.157
+    public String SERVICE_IP = "101.132.139.37";//10.101.208.78   10.101.80.134 10.101.80.100 10.101.208.157 10.101.208.157
     public int SERVICE_PORT = 23303;
     private Socket socket = new Socket();
     private String MAC = "";
@@ -91,7 +102,23 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
     private ArrayList<String> imageTitles;
     String path = null; // 下载地址
     public static final int MESSAGE = 345334;
+    public static final int MESSAGE_UPDATE = 345333;
+    public static final int MESSAGE_OUT = 756467;
+    public static final int MESSAGE_DISMISS = 756468;
 
+    private Receiver receiver;
+    private Receivers receivers;
+    private Receiverdismiss receiverdismiss;
+    private static final String BROADCAST_PERMISSION_DISC = "com.permissions.MYF_BROADCAST";
+    private static final String BROADCAST_ACTION_DISC = "com.permissions.myf_broadcast";
+    private static final String BROADCAST_PASS_DISC = "com.permissions.MYP_BROADCAST";
+    private static final String BROADCAST_ACTION_PASS = "com.permissions.myp_broadcast";
+    private static final String BROADCAST_DISMISS_DISC = "com.permissions.MYD_BROADCAST";
+    private static final String BROADCAST_ACTION_DISMISS = "com.permissions.myd_broadcast";
+    private SweetAlertDialog pDialog;
+    private LinearLayout smallprogram;
+    private LinearLayout signout;
+    private BottomSheetDialog bottomSheetDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -138,11 +165,37 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
     }
 
     private void initView() {
+        smallprogram = findViewById(R.id.smallprogram);
+        smallprogram.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SosDialog sosDialog = new SosDialog(MainActivity.this);
+                sosDialog.show();
+            }
+        });
+        signout = findViewById(R.id.signout);
+        signout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openPayPasswordDialog();
+            }
+        });
+
         initData();
-        //加载图片
-        addImage();
         //banner1.setImages(bannerList).setImageLoader(new GlideImageLoader()).start();
         //banner2.setImages(bannerList).setImageLoader(new GlideImageLoader()).start();
+
+        //设备唯一标识
+        Context context = getWindow().getContext();
+        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        @SuppressLint("MissingPermission") String imei = tm.getDeviceId();
+        //绑定唯一标识
+        JPushInterface.setAlias(MainActivity.this, 1, imei);
+        //视频更新广播注册
+        RegisteredBroadcasting();
+        //加载图片
+        addImage();
+        //初始化串口
         initSerial();
     }
 
@@ -170,8 +223,9 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
                 });
             }
         };
+
 //        try {
-////            设置串口信息
+////           设置串口信息
 //            serialHelper.setBaudRate(BOTE);
 //            serialHelper.setPort(CHUAN);
 //            serialHelper.open();
@@ -209,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
     void initData() {
         MAC = GetMac.getMacAddress().replaceAll(":", "");
         System.out.println("mac: " + MAC);
-//        socket = new Socket();
+        socket = new Socket();
 //        bannerList = new ArrayList<>();
 //        bannerList.add(R.drawable.banner_1);
 //        bannerList.add(R.drawable.banner_2);
@@ -225,6 +279,11 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
         tcpSocket.stopSocket();//关闭tcp通讯
         if (EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().unregister(this);
+
+        unregisterReceiver(receiver);
+        unregisterReceiver(receivers);
+        unregisterReceiver(receiverdismiss);
+
     }
 
     //加载网络图片资源
@@ -256,14 +315,14 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
                             for (int i = 0; i < array.length(); i++) {
                                 object = (JSONObject) array.get(i);
                                 String url = object.getString("url");
-                                list_path.add("http://10.101.80.113:8080" + url);
+                                list_path.add(URLs.HOST + url);
                                 imageTitle.add("");
                             }
 
                             for (int i = 2; i < array.length(); i++) {
                                 object = (JSONObject) array.get(i);
                                 String url = object.getString("url");
-                                list_paths.add("http://10.101.80.113:8080" + url);
+                                list_paths.add(URLs.HOST + url);
                                 imageTitles.add("");
                             }
                             banner1.setBannerStyle(BannerConfig.CIRCLE_INDICATOR_TITLE_INSIDE);
@@ -332,8 +391,7 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
             // 如果已经存在, 就不下载了, 去播放
             setVideo();
         } else {
-            //获取视频路径；
-            // 如果不存在, 提示下载
+            //如果不存在, 提示下载 获取视频路径；
             addVideo();
         }
     }
@@ -394,7 +452,11 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
                 new NetCallBack() {
                     @Override
                     public void onStart() {
-                        SVProgressHUD.showWithStatus(MainActivity.this, "正在加载视频");
+                        pDialog = new SweetAlertDialog(MainActivity.this, SweetAlertDialog.PROGRESS_TYPE);
+                        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+                        pDialog.setTitleText("获取视频中......");
+                        pDialog.setCancelable(false);
+                        pDialog.show();
                         super.onStart();
                     }
 
@@ -416,7 +478,7 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
                                 for (int i = 0; i < array.length(); i++) {
                                     object = (JSONObject) array.get(i);
                                     String record_url = object.optString("record_url");
-                                    path = "http://10.101.80.113:8080" + record_url;
+                                    path = URLs.HOST + record_url;
                                 }
                                 new Thread(new Runnable() {
                                     @Override
@@ -437,15 +499,28 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
     }
 
     //收到视频下载完的消息，播放视频
+    @SuppressLint("HandlerLeak")
     private Handler m_handler = new Handler() {
         @SuppressWarnings("deprecation")
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE:
-                    SVProgressHUD.dismiss(MainActivity.this);
-//                    播放视频
+                    // 关闭提示框，播放本地视频
+                    pDialog.dismiss();
                     setVideo();
                     break;
+                case MESSAGE_UPDATE:
+                    //视频下载
+                    addVideo();
+                    break;
+                case MESSAGE_OUT:
+                    //退出
+                    finish();
+                case MESSAGE_DISMISS:
+                    //退出
+                    bottomSheetDialog.dismiss();
+                    break;
+
                 default:
                     break;
             }
@@ -454,4 +529,67 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
 
         ;
     };
+
+    //视频更新广播注册
+    private void RegisteredBroadcasting() {
+        receiver = new Receiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BROADCAST_ACTION_DISC); // 只有持有相同的action的接受者才能接收此广
+        registerReceiver(receiver, intentFilter, BROADCAST_PERMISSION_DISC, null);
+
+        receivers = new Receivers();
+        IntentFilter intentFilters = new IntentFilter();
+        intentFilters.addAction(BROADCAST_ACTION_PASS); // 只有持有相同的action的接受者才能接收此广
+        registerReceiver(receivers, intentFilters, BROADCAST_PASS_DISC, null);
+
+        receiverdismiss = new Receiverdismiss();
+        IntentFilter intentFilterdismiss = new IntentFilter();
+        intentFilterdismiss.addAction(BROADCAST_ACTION_DISMISS); // 只有持有相同的action的接受者才能接收此广
+        registerReceiver(receiverdismiss, intentFilterdismiss, BROADCAST_DISMISS_DISC, null);
+
+    }
+
+
+
+    // 视频更新广播通知处理
+    public class Receiver extends BroadcastReceiver {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(BROADCAST_ACTION_DISC)) {
+                String str = intent.getStringExtra("str_test");
+                m_handler.sendEmptyMessage(MESSAGE_UPDATE);
+
+            }
+        }
+    }
+
+    // 退出通知处理
+    public class Receivers extends BroadcastReceiver {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(BROADCAST_ACTION_PASS)) {
+                m_handler.sendEmptyMessage(MESSAGE_OUT);
+            }
+        }
+    }
+    // 返回通知处理
+    public class Receiverdismiss extends BroadcastReceiver {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(BROADCAST_ACTION_DISMISS)) {
+                m_handler.sendEmptyMessage(MESSAGE_DISMISS);
+            }
+        }
+    }
+
+
+    private void openPayPasswordDialog() {
+        PayPasswordView payPasswordView = new PayPasswordView(this);
+        bottomSheetDialog = new BottomSheetDialog(this);
+        bottomSheetDialog.setContentView(payPasswordView);
+        bottomSheetDialog.setCanceledOnTouchOutside(false);
+        bottomSheetDialog.show();
+    }
+
+
 }

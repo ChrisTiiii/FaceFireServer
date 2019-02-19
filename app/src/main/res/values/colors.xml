@@ -9,4 +9,11 @@
     <color name="bgColor_overlay">#60000000</color>
     <color name="roundColor_svprogresshuddefault">#e5e5e5</color>
     <color name="roundProgressColor_svprogresshuddefault">@android:color/black</color>
+    <color name="white">#ffffff</color>
+    <color name="gray_thin">#e5e5e5</color>
+    <color name="normal_bg_color">#f0f0f0</color>
+    <color name="black">#000000</color>
+    <color name="app_background">#E6E6E6</color>
+    <color name="app_stroke_line">#E0E0E0</color>
+    <color name="gray">#ff666666</color>
 </resources>

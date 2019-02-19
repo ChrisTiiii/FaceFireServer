@@ -187,12 +187,15 @@ public class TCPSocket extends Thread {
                 if (byteArrayinputstream != null) {
                     BufferedReader in = new BufferedReader(new InputStreamReader(byteArrayinputstream));
                     Log.i("Data", "向服务器发送数据,发送时间=" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+
+                    System.out.println("========================88888888888"+"向服务器发送数据,发送时间=");
                     if (connectsocket1.isClosed()) {
                         connectsocket1.close();
                     } else {
                         connectsocket1.getOutputStream().write(senddata);//发送数据
 //                        getBackData();
                         Log.i("Data", "获取输出流成功");
+                        System.out.println("========================9999999999"+"获取输出流成功");
                     }
 
                 }
