@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -14,6 +15,7 @@ import android.os.Message;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -119,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
     private LinearLayout smallprogram;
     private LinearLayout signout;
     private BottomSheetDialog bottomSheetDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,11 +129,18 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
         this.getSupportActionBar().hide();
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //隐藏虚拟按键
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+
+        decorView.setSystemUiVisibility(uiOptions);
         setContentView(R.layout.activity_main);
         EventBus.getDefault().register(this);
         ButterKnife.bind(this);
         initView();
         initSeceive();
+        hideBottomUIMenu();
     }
 
     //初始化TCP通讯
@@ -407,7 +417,6 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
             InputStream is = conn.getInputStream();
             //获得长度
             int contentLength = conn.getContentLength();
-
             //创建文件夹 MyDownLoad，在存储卡下
             String dirName = "/sdcard/FireVideo/";
             File file = new File(dirName);
@@ -517,38 +526,36 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
                     //退出
                     finish();
                 case MESSAGE_DISMISS:
-                    //退出
+                    //返回
                     bottomSheetDialog.dismiss();
                     break;
-
                 default:
                     break;
             }
-
         }
 
         ;
     };
 
-    //视频更新广播注册
+    //广播注册
     private void RegisteredBroadcasting() {
+        //视频更新广播注册
         receiver = new Receiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(BROADCAST_ACTION_DISC); // 只有持有相同的action的接受者才能接收此广
         registerReceiver(receiver, intentFilter, BROADCAST_PERMISSION_DISC, null);
-
+        //退出事件广播注册
         receivers = new Receivers();
         IntentFilter intentFilters = new IntentFilter();
         intentFilters.addAction(BROADCAST_ACTION_PASS); // 只有持有相同的action的接受者才能接收此广
         registerReceiver(receivers, intentFilters, BROADCAST_PASS_DISC, null);
-
+        //返回事件广播注册
         receiverdismiss = new Receiverdismiss();
         IntentFilter intentFilterdismiss = new IntentFilter();
         intentFilterdismiss.addAction(BROADCAST_ACTION_DISMISS); // 只有持有相同的action的接受者才能接收此广
         registerReceiver(receiverdismiss, intentFilterdismiss, BROADCAST_DISMISS_DISC, null);
 
     }
-
 
 
     // 视频更新广播通知处理
@@ -558,7 +565,6 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
             if (action.equals(BROADCAST_ACTION_DISC)) {
                 String str = intent.getStringExtra("str_test");
                 m_handler.sendEmptyMessage(MESSAGE_UPDATE);
-
             }
         }
     }
@@ -572,6 +578,7 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
             }
         }
     }
+
     // 返回通知处理
     public class Receiverdismiss extends BroadcastReceiver {
         public void onReceive(Context context, Intent intent) {
@@ -582,7 +589,6 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
         }
     }
 
-
     private void openPayPasswordDialog() {
         PayPasswordView payPasswordView = new PayPasswordView(this);
         bottomSheetDialog = new BottomSheetDialog(this);
@@ -591,5 +597,34 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
         bottomSheetDialog.show();
     }
 
+    @Override
+    public void onBackPressed() {
+        return;//在按返回键时的操作
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            return true;
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
+    }
+    /**
+     * 隐藏虚拟按键，并且全屏
+     */
+    protected void hideBottomUIMenu() {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api
+            View v = this.getWindow().getDecorView();
+            v.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            //for new api versions.
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+    }
 
 }
