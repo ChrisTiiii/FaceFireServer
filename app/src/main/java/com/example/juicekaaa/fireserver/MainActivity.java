@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
             case TCP_BACK_DATA:
                 String order = messageEvent.getMessage();
                 order = order.replaceAll(" ", "");
-                Toast.makeText(MainActivity.this, "收到信息啦！" + order, Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "收到信息啦！" + order, Toast.LENGTH_LONG).show();
                 if (serialHelper.isOpen()) {
                     Toast.makeText(this, "开门成功", Toast.LENGTH_LONG).show();
                     serialHelper.sendHex(order);
@@ -190,11 +190,7 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
                 openPayPasswordDialog();
             }
         });
-
         initData();
-        //banner1.setImages(bannerList).setImageLoader(new GlideImageLoader()).start();
-        //banner2.setImages(bannerList).setImageLoader(new GlideImageLoader()).start();
-
         //设备唯一标识
         Context context = getWindow().getContext();
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
@@ -254,11 +250,8 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
         mediaController.setVisibility(View.GONE);//隐藏进度条
         video.setMediaController(mediaController);
         File file = new File(Environment.getExternalStorageDirectory() + "/" + "FireVideo", "1542178640266.mp4");
-//        String dirName =Environment.getRootDirectory().getPath()+"/sanleng.mp4";
         video.setVideoPath(file.getAbsolutePath());
         video.start();
-//        video.setVideoURI(Uri.parse(dirName));
-//        video.start();
         video.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
@@ -274,12 +267,6 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
         MAC = GetMac.getMacAddress().replaceAll(":", "");
         System.out.println("mac: " + MAC);
         socket = new Socket();
-//        bannerList = new ArrayList<>();
-//        bannerList.add(R.drawable.banner_1);
-//        bannerList.add(R.drawable.banner_2);
-//        bannerList.add(R.drawable.banner_3);
-//        bannerList.add(R.drawable.banner_4);
-
     }
 
     @Override
