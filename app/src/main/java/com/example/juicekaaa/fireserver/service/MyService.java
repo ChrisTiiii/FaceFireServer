@@ -25,7 +25,7 @@ public class MyService extends Service {
         getMac();
         socket = new Socket();
         initSeceive();
-        Log.e(TAG, "oncreate");
+        Log.e(TAG, MAC);
     }
 
     @Override

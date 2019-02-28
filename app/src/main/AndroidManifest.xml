@@ -96,6 +96,9 @@
         <activity android:name=".ui.UserGroupManagerActivity" />
         <activity android:name=".ui.IDcardRegActivity" />
 
+        <service
+            android:name="com.synjones.idcard.RemoteDecodeService"
+            android:process=":remote" />
     </application>
 
 </manifest>

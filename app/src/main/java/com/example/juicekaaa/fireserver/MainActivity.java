@@ -16,9 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.Toast;
 
-import com.bjw.bean.ComBean;
-import com.bjw.utils.FuncUtil;
-import com.bjw.utils.SerialHelper;
+//import com.bjw.bean.ComBean;
+//import com.bjw.utils.FuncUtil;
+//import com.bjw.utils.SerialHelper;
 import com.example.juicekaaa.fireserver.broadcast.Receiver;
 import com.example.juicekaaa.fireserver.net.Advertisement;
 import com.example.juicekaaa.fireserver.service.MyService;
@@ -29,6 +29,7 @@ import com.example.juicekaaa.fireserver.util.MessageEvent;
 import com.example.juicekaaa.fireserver.util.PayPasswordView;
 import com.example.juicekaaa.fireserver.util.SosDialog;
 import com.example.juicekaaa.fireserver.util.VideoUtil;
+import com.example.juicekaaa.fireserver.utils.SerialUtils;
 import com.youth.banner.Banner;
 import com.youth.banner.BannerConfig;
 import com.youth.banner.Transformer;
@@ -50,8 +51,8 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements OnBannerListener {
     //    private static final int PORT = 12342;//接收客户端的监听端口
-    private static final String CHUAN = "/dev/ttymxc2";
-    private static final String BOTE = "9600";
+//    private static final String CHUAN = "/dev/ttymxc2";
+//    private static final String BOTE = "9600";
     @BindView(R.id.open_door)
     LinearLayout openDoor;
     private VideoUtil videoUtil;
@@ -66,9 +67,8 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
     LinearLayout smallprogram;
     @BindView(R.id.signout)
     LinearLayout signout;
-
     //    private SerialPortFinder serialPortFinder;
-    private SerialHelper serialHelper;
+//    private SerialHelper serialHelper;
 
     private Receiver receivera;
     private Receiver receiverb;
@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
     private Receiver receiverd;
 
     private BottomSheetDialog bottomSheetDialog;
+    private SerialUtils serial = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,8 +123,14 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
      * 初始化
      */
     private void initView() {
+        serial = new SerialUtils();
+        try {
+            serial.openSerialPort();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         //初始化串口
-        initSerial();
+//        initSerial();
 //        //设备唯一标识（极光推送）
 //        Context context = getWindow().getContext();
 //        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
@@ -145,11 +152,17 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
                 String order = messageEvent.getMessage();
                 order = order.replaceAll(" ", "");
                 Toast.makeText(MainActivity.this, "收到信息啦！" + order, Toast.LENGTH_LONG).show();
-                if (serialHelper.isOpen()) {
+                if (serial.isOpen()) {
                     Toast.makeText(this, "开门成功", Toast.LENGTH_LONG).show();
-                    serialHelper.sendHex(order);
-                } else
+                    serial.sendSerialPort(order);
+                } else {
                     Toast.makeText(this, "串口没打开", Toast.LENGTH_LONG).show();
+                }
+//                if (serialHelper.isOpen()) {
+//                    Toast.makeText(this, "开门成功", Toast.LENGTH_LONG).show();
+//                    serialHelper.sendHex(order);
+//                } else
+//                    Toast.makeText(this, "串口没打开", Toast.LENGTH_LONG).show();
                 break;
             case MyApplication.MESSAGE:// 关闭提示框，播放本地视频
                 videoUtil.setVideo();
@@ -192,20 +205,20 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
     /**
      * 初始化串口
      */
-    private void initSerial() {
-//        serialPortFinder = new SerialPortFinder();
-        serialHelper = new SerialHelper() {
-            @Override
-            protected void onDataReceived(final ComBean comBean) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //接收设备回传数据
-                        Toast.makeText(getBaseContext(), FuncUtil.ByteArrToHex(comBean.bRec), Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        };
+//    private void initSerial() {
+////        serialPortFinder = new SerialPortFinder();
+//        serialHelper = new SerialHelper() {
+//            @Override
+//            protected void onDataReceived(final ComBean comBean) {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        //接收设备回传数据
+//                        Toast.makeText(getBaseContext(), FuncUtil.ByteArrToHex(comBean.bRec), Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+//        };
 
 //        try {
 ////           设置串口信息
@@ -216,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
 //            e.printStackTrace();
 //        }
 
-    }
+//    }
 
 
     //播放本地视频，判断本地是否存在视频，没有视频就下载视频
@@ -361,7 +374,7 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        serialHelper.close();//关闭串口
+        serial.closeSerialPort();//关闭串口
         if (EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().unregister(this);
         unregisterReceiver(receivera);
