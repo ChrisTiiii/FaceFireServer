@@ -3,7 +3,6 @@ package com.example.juicekaaa.fireserver.tcp;
 import android.util.Log;
 
 import com.example.juicekaaa.fireserver.MyApplication;
-import com.example.juicekaaa.fireserver.udp.HeartbeatTimer;
 import com.example.juicekaaa.fireserver.util.EncodingConversionTools;
 import com.example.juicekaaa.fireserver.util.MessageEvent;
 
@@ -92,7 +91,6 @@ public class TCPSocket extends Thread {
 //                    senddata(senddata, connectsocket);
                     startHeartbeatTimer();
                 }
-
                 Thread.sleep(INTERVAL_TIME);
 
             } catch (InterruptedException e) {
@@ -134,8 +132,6 @@ public class TCPSocket extends Thread {
         try {
             Log.i("Data", " socket begin connect ++++++++++");
             Log.i("Data", "tcp connect ,ip = " + IPAddress + "Port = " + Port);
-//            Log.i("Data","the send data="+EncodingConversionTools.byte2HexStr(senddata));
-//            connectsocket=new Socket(IPAddress,Port);
             connectsocket.setSoTimeout(10 * 1000);   //设置连接超时时间
             Log.i("Data", "connectsocket.isConnected=" + connectsocket.isConnected());   //是否关闭
             Log.i("Data", "connectsocket.isClosed=" + connectsocket.isClosed());   //是否连接
@@ -265,8 +261,8 @@ public class TCPSocket extends Thread {
         timer.startTimer(1000 * 60, 1000 * 60); //60
     }
 
-    //接收数据
-    void getBackData() throws IOException {
+//    //接收数据
+//    void getBackData() throws IOException {
 //        //接收返回数据
 //        byte[] acceptdata1 = null;
 //        InputStream istream = null;
@@ -278,7 +274,7 @@ public class TCPSocket extends Thread {
 //            istream.read(acceptdata1);
 //            System.out.println("TEST:" + EncodingConversionTools.byte2HexStr(acceptdata1));
 //        }
-    }
+//    }
 
 
 }
