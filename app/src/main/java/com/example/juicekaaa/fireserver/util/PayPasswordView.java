@@ -2,7 +2,6 @@ package com.example.juicekaaa.fireserver.util;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;

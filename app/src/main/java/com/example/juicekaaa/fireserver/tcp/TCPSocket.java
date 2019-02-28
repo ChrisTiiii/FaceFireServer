@@ -2,6 +2,7 @@ package com.example.juicekaaa.fireserver.tcp;
 
 import android.util.Log;
 
+import com.example.juicekaaa.fireserver.MyApplication;
 import com.example.juicekaaa.fireserver.udp.HeartbeatTimer;
 import com.example.juicekaaa.fireserver.util.EncodingConversionTools;
 import com.example.juicekaaa.fireserver.util.MessageEvent;
@@ -18,17 +19,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TCPSocket extends Thread {
-
     private static final String TAG = "Socket";
     private long lastReceiveTime = 0;
-    private static final long TIME_OUT = 60 * 1000; //30
-    private static final long HEARTBEAT_MESSAGE_DURATION = 50 * 1000; //10
+    private static final long TIME_OUT = 60 * 1000; //60s
+    private static final long HEARTBEAT_MESSAGE_DURATION = 50 * 1000; //50s
     private HeartbeatTimer timer;
-    private static final int TCP_BACK_DATA = 0x213;
     private static Socket connectsocket;
     private static String IPAddress;
     private static int Port;
-
     private boolean isSuccess = false;
     private String lastResult;
     private byte[] senddata;
@@ -137,7 +135,6 @@ public class TCPSocket extends Thread {
             Log.i("Data", " socket begin connect ++++++++++");
             Log.i("Data", "tcp connect ,ip = " + IPAddress + "Port = " + Port);
 //            Log.i("Data","the send data="+EncodingConversionTools.byte2HexStr(senddata));
-
 //            connectsocket=new Socket(IPAddress,Port);
             connectsocket.setSoTimeout(10 * 1000);   //设置连接超时时间
             Log.i("Data", "connectsocket.isConnected=" + connectsocket.isConnected());   //是否关闭
@@ -188,14 +185,14 @@ public class TCPSocket extends Thread {
                     BufferedReader in = new BufferedReader(new InputStreamReader(byteArrayinputstream));
                     Log.i("Data", "向服务器发送数据,发送时间=" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
-                    System.out.println("========================88888888888"+"向服务器发送数据,发送时间=");
+                    System.out.println("========================88888888888" + "向服务器发送数据,发送时间=");
                     if (connectsocket1.isClosed()) {
                         connectsocket1.close();
                     } else {
                         connectsocket1.getOutputStream().write(senddata);//发送数据
 //                        getBackData();
                         Log.i("Data", "获取输出流成功");
-                        System.out.println("========================9999999999"+"获取输出流成功");
+                        System.out.println("========================9999999999" + "获取输出流成功");
                     }
 
                 }
@@ -227,7 +224,7 @@ public class TCPSocket extends Thread {
                             isSuccess = true;
                             lastResult = EncodingConversionTools.byte2HexStr(acceptdata1);
                             if (lastResult != null)
-                                EventBus.getDefault().post(new MessageEvent(TCP_BACK_DATA, lastResult));
+                                EventBus.getDefault().post(new MessageEvent(MyApplication.TCP_BACK_DATA, lastResult));
                             Log.i("Data", "the lastresult=" + lastResult);
                         }
                     }
@@ -255,17 +252,17 @@ public class TCPSocket extends Thread {
                 Log.d(TAG, "timer is onSchedule...");
                 long duration = System.currentTimeMillis() - lastReceiveTime;
                 Log.d(TAG, "duration:" + duration);
-                if (duration > TIME_OUT) {//若超过30s都没收到我的心跳包，则认为对方不在线。
+                if (duration > TIME_OUT) {//若超过60s都没收到我的心跳包，则认为对方不在线。
                     Log.d(TAG, "超时，对方已经下线");
                     // 刷新时间，重新进入下一个心跳周期
                     lastReceiveTime = System.currentTimeMillis();
-                } else if (duration > HEARTBEAT_MESSAGE_DURATION) {//若超过十秒他没收到我的心跳包，则重新发一个。
+                } else if (duration > HEARTBEAT_MESSAGE_DURATION) {//若超过五十秒他没收到我的心跳包，则重新发一个。
                     senddata(senddata, connectsocket);
                 }
             }
 
         });
-        timer.startTimer(1000 * 60, 1000 * 60); //20
+        timer.startTimer(1000 * 60, 1000 * 60); //60
     }
 
     //接收数据

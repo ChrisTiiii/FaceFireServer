@@ -1,3 +1,42 @@
 <resources>
     <string name="app_name">FireServer</string>
+    <!-- 身份证 -->
+    <string name="idcard_controller_label">身份证</string>
+    <string name="idcard_controller_btn_connect">连接</string>
+    <string name="idcard_controller_btn_stop">停止</string>
+    <string name="idcard_controller_btn_readcard">单次读卡</string>
+    <string name="idcard_controller_btn_readcard_2">连续读卡</string>
+    <string name="idcard_controller_btn_disconnect">断开</string>
+    <string name="idcard_controller_tv_name">姓 名:</string>
+    <string name="idcard_controller_tv_sex">性 别 :</string>
+    <string name="idcard_controller_tv_ethnic">民 族:</string>
+    <string name="idcard_controller_tv_birth">出 生:</string>
+    <string name="idcard_controller_tv_address">住 址:</string>
+    <string name="idcard_controller_tv_idnumber">公民身份证号码:</string>
+    <string name="idcard_controller_btn_clear">清除</string>
+    <string name="idcard_controller_tv_authority">发证机关:</string>
+    <string name="idcard_controller_tv_period">有效期:</string>
+    <string name="sdtstatus">状态:</string>
+    <string name="idcard_count">次数:</string>
+    <string name="idcard_count_success">成功:</string>
+    <string name="idcard_count_failed">失败:</string>
+
+    <!-- Vanstone V10 键盘 -->
+    <string name="device_power_up">模块上电</string>
+    <string name="vanstone_v10_tips">未获取到通信通道，请点击连接按钮...</string>
+    <string name="device_connect">连接</string>
+    <string name="display_string">显示字符串</string>
+    <string name="clear_string">清屏</string>
+    <string name="get_pin_content">获取明文密码</string>
+    <string name="get_encrypt_pin_content">获取密文密码</string>
+    <string name="power_off">断开</string>
+    <string name="binded_device">已绑定设备</string>
+    <string name="goto_power_saving_mode">进入省电模式</string>
+    <string name="goto_work_mode">进入工作模式</string>
+    <string name="time">时间：</string>
+    <string name="back">退后</string>
+    <string name="update_master_work_key">更新主,工密钥</string>
+    <string name="no_binded_device">未绑定设备</string>
+    <string name="money_value">1000.0</string>
+    <string name="large_text">Large Text</string>
 </resources>

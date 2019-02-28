@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.juicekaaa.fireserver">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <!--6.0以上需要手动添加权限设置 -->
     <uses-permission android:name="com.permissions.MYF_BROADCAST" />
     <permission
@@ -16,6 +22,12 @@
     <permission
         android:name="com.permissions.MYD_BROADCAST"
         android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.permissions.MYV_BROADCAST" />
+    <permission
+        android:name="com.permissions.MYV_BROADCAST"
+        android:protectionLevel="signature" />
+
     <!-- Required  一些系统要求的权限，如访问网络等 -->
     <uses-permission android:name="com.example.juicekaaa.fireserver.permission.JPUSH_MESSAGE" />
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
@@ -45,8 +57,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:replace="android:icon,android:theme,android:allowBackup"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:icon,android:theme,android:allowBackup">
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -69,7 +81,20 @@
                 <category android:name="com.example.juicekaaa.fireserver" />
             </intent-filter>
         </receiver>
+        <service android:name=".service.MyService" />
 
+        <activity android:name=".ui.OpenDoorActivity" />
+        <activity android:name=".ui.BatchImportActivity" />
+        <activity android:name=".ui.AddGroupActivity" />
+        <activity android:name=".ui.GroupListActivity" />
+        <activity android:name=".ui.RgbVideoIdentityActivity" />
+        <activity android:name=".ui.RgbVideoMatchImageActivity" />
+        <activity android:name=".ui.RegActivity" />
+        <activity android:name=".ui.UserListActivity" />
+        <activity android:name=".ui.UserActivity" />
+        <activity android:name=".ui.RgbDetectActivity" />
+        <activity android:name=".ui.UserGroupManagerActivity" />
+        <activity android:name=".ui.IDcardRegActivity" />
 
     </application>
 
