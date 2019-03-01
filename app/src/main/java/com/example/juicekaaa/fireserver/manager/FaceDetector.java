@@ -8,7 +8,7 @@ import android.content.Context;
 import com.baidu.idl.facesdk.FaceDetect;
 import com.baidu.idl.facesdk.callback.Callback;
 import com.baidu.idl.facesdk.model.FaceInfo;
-import com.example.juicekaaa.fireserver.ImageFrame;
+import com.example.juicekaaa.fireserver.utils.ImageFrame;
 import com.example.juicekaaa.fireserver.callback.FaceCallback;
 
 public class FaceDetector {

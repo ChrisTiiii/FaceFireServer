@@ -2,7 +2,7 @@ package com.example.juicekaaa.fireserver.face;/*
  * Copyright (C) 2017 Baidu, Inc. All Rights Reserved.
  */
 
-import com.example.juicekaaa.fireserver.ImageFrame;
+import com.example.juicekaaa.fireserver.utils.ImageFrame;
 
 /**
  * 当图片源有新的图片帧时会回调该类。

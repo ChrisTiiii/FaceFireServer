@@ -21,7 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.juicekaaa.fireserver.ImageFrame;
+import com.example.juicekaaa.fireserver.utils.ImageFrame;
 import com.example.juicekaaa.fireserver.R;
 import com.example.juicekaaa.fireserver.face.CameraImageSource;
 import com.example.juicekaaa.fireserver.face.FaceCropper;

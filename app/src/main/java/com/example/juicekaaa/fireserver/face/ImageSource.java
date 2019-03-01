@@ -2,7 +2,7 @@ package com.example.juicekaaa.fireserver.face;/*
  * Copyright (C) 2017 Baidu, Inc. All Rights Reserved.
  */
 
-import com.example.juicekaaa.fireserver.ImageFrame;
+import com.example.juicekaaa.fireserver.utils.ImageFrame;
 
 import java.util.ArrayList;
 

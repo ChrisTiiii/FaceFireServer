@@ -1,4 +1,4 @@
-package com.example.juicekaaa.fireserver.imp;
+package com.example.juicekaaa.fireserver.net;
 
 
 import okhttp3.ResponseBody;

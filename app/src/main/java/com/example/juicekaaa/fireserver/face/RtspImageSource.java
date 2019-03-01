@@ -9,8 +9,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 
-import com.example.juicekaaa.fireserver.ImageFrame;
-import com.example.juicekaaa.fireserver.RtspClient;
+import com.example.juicekaaa.fireserver.utils.ImageFrame;
+import com.example.juicekaaa.fireserver.utils.RtspClient;
 
 
 /**

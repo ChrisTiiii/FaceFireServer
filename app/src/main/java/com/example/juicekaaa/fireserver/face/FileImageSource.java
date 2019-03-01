@@ -7,7 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 
-import com.example.juicekaaa.fireserver.ImageFrame;
+import com.example.juicekaaa.fireserver.utils.ImageFrame;
 import com.example.juicekaaa.fireserver.manager.FaceSDKManager;
 
 

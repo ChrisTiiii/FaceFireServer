@@ -5,7 +5,7 @@ package com.example.juicekaaa.fireserver.face;/*
 import android.graphics.Rect;
 import android.graphics.RectF;
 
-import com.example.juicekaaa.fireserver.ImageFrame;
+import com.example.juicekaaa.fireserver.utils.ImageFrame;
 
 /**
  * 裁剪一定区域内的图片进行检测。

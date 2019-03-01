@@ -17,7 +17,7 @@ public class MyService extends Service {
     public String SERVICE_IP = "101.132.139.37";//10.101.208.78   10.101.80.134 10.101.80.100 10.101.208.157 10.101.208.157
     public int SERVICE_PORT = 23303;
     private String MAC = "";
-    private final String TAG = "test";
+    private final String TAG = "SERVICE";
 
     @Override
     public void onCreate() {

@@ -8,7 +8,7 @@ import android.support.v4.util.Pools;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.example.juicekaaa.fireserver.ImageFrame;
+import com.example.juicekaaa.fireserver.utils.ImageFrame;
 import com.baidu.idl.facesdk.model.FaceInfo;
 
 import java.util.ArrayList;

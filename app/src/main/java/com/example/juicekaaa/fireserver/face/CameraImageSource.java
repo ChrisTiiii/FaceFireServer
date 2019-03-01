@@ -8,7 +8,7 @@ import android.media.Image;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
-import com.example.juicekaaa.fireserver.ImageFrame;
+import com.example.juicekaaa.fireserver.utils.ImageFrame;
 import com.example.juicekaaa.fireserver.face.camera.Camera1Control;
 import com.example.juicekaaa.fireserver.face.camera.Camera2Control;
 import com.example.juicekaaa.fireserver.face.camera.ICameraControl;

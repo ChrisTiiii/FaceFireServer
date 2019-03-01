@@ -28,7 +28,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.juicekaaa.fireserver.ImageFrame;
+import com.example.juicekaaa.fireserver.utils.ImageFrame;
 import com.example.juicekaaa.fireserver.R;
 import com.example.juicekaaa.fireserver.api.FaceApi;
 import com.example.juicekaaa.fireserver.db.DBManager;
@@ -48,15 +48,12 @@ import com.example.juicekaaa.fireserver.utils.ImageUtils;
 import com.example.juicekaaa.fireserver.utils.PreferencesUtil;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**

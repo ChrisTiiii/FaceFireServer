@@ -1,27 +1,20 @@
-package com.example.juicekaaa.fireserver.imp;
+package com.example.juicekaaa.fireserver.net;
 
 import android.content.Context;
 import android.content.Intent;
 
 import com.example.juicekaaa.fireserver.MyApplication;
-import com.example.juicekaaa.fireserver.net.URLs;
 import com.example.juicekaaa.fireserver.util.DownLoadManager;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observer;
-import rx.Scheduler;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 

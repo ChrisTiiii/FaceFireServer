@@ -3,7 +3,7 @@ package com.example.juicekaaa.fireserver.face;/*
  */
 
 
-import com.example.juicekaaa.fireserver.ImageFrame;
+import com.example.juicekaaa.fireserver.utils.ImageFrame;
 
 /**
  *  FaceDetectManager 人脸检测之前的回调。可以对图片进行预处理。如果ImageFrame中的argb数据为空，将不进行检测。

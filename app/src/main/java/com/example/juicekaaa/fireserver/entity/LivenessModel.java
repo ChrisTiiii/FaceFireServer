@@ -2,7 +2,7 @@ package com.example.juicekaaa.fireserver.entity;/*
  * Copyright (C) 2018 Baidu, Inc. All Rights Reserved.
  */
 
-import com.example.juicekaaa.fireserver.ImageFrame;
+import com.example.juicekaaa.fireserver.utils.ImageFrame;
 import com.baidu.idl.facesdk.model.FaceInfo;
 
 public class LivenessModel {

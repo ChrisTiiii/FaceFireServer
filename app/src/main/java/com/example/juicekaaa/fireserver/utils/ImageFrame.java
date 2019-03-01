@@ -1,4 +1,4 @@
-package com.example.juicekaaa.fireserver;/*
+package com.example.juicekaaa.fireserver.utils;/*
  * Copyright (C) 2017 Baidu, Inc. All Rights Reserved.
  */
 
