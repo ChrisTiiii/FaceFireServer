@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
             @Override
             public void run() {
                 //加载图片
-                Advertisement.addImage();
+//                Advertisement.addImage();
             }
         }).start();
         //加载本地視頻
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
                 Toast.makeText(MainActivity.this, "收到信息啦！" + order, Toast.LENGTH_LONG).show();
                 if (serial.isOpen()) {
                     Toast.makeText(this, "开门成功", Toast.LENGTH_LONG).show();
-                    serial.sendSerialPort(order);
+                    serial.sendHex(order);
                 } else {
                     Toast.makeText(this, "串口没打开", Toast.LENGTH_LONG).show();
                 }
@@ -382,5 +382,6 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
         unregisterReceiver(receiverc);
         unregisterReceiver(receiverd);
     }
+
 
 }

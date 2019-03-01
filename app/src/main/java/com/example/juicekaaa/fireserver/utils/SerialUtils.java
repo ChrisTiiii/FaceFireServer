@@ -3,6 +3,8 @@ package com.example.juicekaaa.fireserver.utils;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.juicekaaa.fireserver.util.EncodingConversionTools;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,11 +40,9 @@ public class SerialUtils {
             serialPort = new SerialPort(new File(CHUAN), BOTE, 0);
             this.serialPortStatus = true;
             threadStatus = false; //线程状态
-
             //获取打开的串口中的输入输出流，以便于串口数据的收发
             inputStream = serialPort.getInputStream();
             outputStream = serialPort.getOutputStream();
-
         } catch (IOException e) {
             Log.e(TAG, "openSerialPort: 打开串口异常：" + e.toString());
             return serialPort;
@@ -75,24 +75,69 @@ public class SerialUtils {
      *
      * @param data String数据指令
      */
-    public void sendSerialPort(String data) {
-        Log.d(TAG, "sendSerialPort: 发送数据");
+    public void sendHex(String sHex) {
+        byte[] bOutArray = HexToByteArr(sHex);
+        this.send(bOutArray);
+    }
 
+    public void send(byte[] bOutArray) {
         try {
-            byte[] sendData = data.getBytes(); //string转byte[]
-            this.data_ = new String(sendData); //byte[]转string
-            if (sendData.length > 0) {
-                outputStream.write(sendData);
-                outputStream.write('\n');
-                //outputStream.write('\r'+'\n');
-                outputStream.flush();
-                Log.d(TAG, "sendSerialPort: 串口数据发送成功");
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "sendSerialPort: 串口数据发送失败：" + e.toString());
+            this.outputStream.write(bOutArray);
+        } catch (IOException var3) {
+            var3.printStackTrace();
         }
 
     }
+
+    public static byte[] HexToByteArr(String inHex) {
+        int hexlen = inHex.length();
+        byte[] result;
+        if (isOdd(hexlen) == 1) {
+            ++hexlen;
+            result = new byte[hexlen / 2];
+            inHex = "0" + inHex;
+        } else {
+            result = new byte[hexlen / 2];
+        }
+
+        int j = 0;
+
+        for(int i = 0; i < hexlen; i += 2) {
+            result[j] = HexToByte(inHex.substring(i, i + 2));
+            ++j;
+        }
+
+        return result;
+    }
+
+    public static int isOdd(int num) {
+        return num & 1;
+    }
+
+    public static byte HexToByte(String inHex) {
+        return (byte)Integer.parseInt(inHex, 16);
+    }
+
+//    public void sendSerialPort(String data) {
+//        System.out.println("before:" + data);
+//        Log.d(TAG, "sendSerialPort: 发送数据");
+//        byte[] sendData = EncodingConversionTools.HexString2Bytes(data);
+//        System.out.println("after" + sendData);
+//        try {
+////            byte[] sendData = data.getBytes(); //string转byte[]
+////            this.data_ = new String(sendData); //byte[]转string
+////            byte[] sendData = EncodingConversionTools.HexString2Bytes(data);
+//            if (data.length() > 0) {
+//                outputStream.write(sendData);
+//                outputStream.write('\n');
+//                outputStream.flush();
+//                Log.d(TAG, "sendSerialPort: 串口数据发送成功 " + sendData);
+//            }
+//        } catch (IOException e) {
+//            Log.e(TAG, "sendSerialPort: 串口数据发送失败：" + e.toString());
+//        }
+//
+//    }
 
     public boolean isOpen() {
         return serialPortStatus;

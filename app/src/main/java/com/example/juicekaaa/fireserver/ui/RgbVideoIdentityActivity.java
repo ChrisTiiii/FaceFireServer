@@ -158,12 +158,12 @@ public class RgbVideoIdentityActivity extends Activity implements View.OnClickLi
 
     private void setCameraType(CameraImageSource cameraImageSource) {
         // TODO 选择使用前置摄像头
-         cameraImageSource.getCameraControl().setCameraFacing(ICameraControl.CAMERA_FACING_FRONT);
+//         cameraImageSource.getCameraControl().setCameraFacing(ICameraControl.CAMERA_FACING_FRONT);
 
         // TODO 选择使用usb摄像头
-/*        cameraImageSource.getCameraControl().setCameraFacing(ICameraControl.CAMERA_USB);
+        cameraImageSource.getCameraControl().setCameraFacing(ICameraControl.CAMERA_USB);
         // 如果不设置，人脸框会镜像，显示不准
-        previewView.getTextureView().setScaleX(-1);*/
+        previewView.getTextureView().setScaleX(-1);
 
         // TODO 选择使用后置摄像头
 /*        cameraImageSource.getCameraControl().setCameraFacing(ICameraControl.CAMERA_FACING_BACK);

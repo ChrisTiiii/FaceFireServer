@@ -24,6 +24,7 @@ public class MessageEvent {
         this.message = message;
     }
 
+
     public List<String> getListPath() {
         return listPath;
     }

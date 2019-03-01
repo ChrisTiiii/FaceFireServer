@@ -127,12 +127,12 @@ public class RgbDetectActivity extends Activity {
 
     private void setCameraType(CameraImageSource cameraImageSource) {
         // TODO 选择使用前置摄像头
-         cameraImageSource.getCameraControl().setCameraFacing(ICameraControl.CAMERA_FACING_FRONT);
+//         cameraImageSource.getCameraControl().setCameraFacing(ICameraControl.CAMERA_FACING_FRONT);
 
         // TODO 选择使用usb摄像头
-/*        cameraImageSource.getCameraControl().setCameraFacing(ICameraControl.CAMERA_USB);
+        cameraImageSource.getCameraControl().setCameraFacing(ICameraControl.CAMERA_USB);
         // 如果不设置，人脸框会镜像，显示不准
-        previewView.getTextureView().setScaleX(-1);*/
+        previewView.getTextureView().setScaleX(-1);
 
         // TODO 选择使用后置摄像头
 /*        cameraImageSource.getCameraControl().setCameraFacing(ICameraControl.CAMERA_FACING_BACK);
@@ -145,14 +145,14 @@ public class RgbDetectActivity extends Activity {
             @Override
             public void onDetectFace(FaceInfo[] infos, ImageFrame frame) {
                 // TODO 显示检测的图片。用于调试，如果人脸sdk检测的人脸需要朝上，可以通过该图片判断
-                 final Bitmap bitmap =
-                   Bitmap.createBitmap(frame.getArgb(), frame.getWidth(), frame.getHeight(), Bitmap.Config.ARGB_8888);
-                   handler.post(new Runnable() {
-                      @Override
-                      public void run() {
-                          testView.setImageBitmap(bitmap);
-                      }
-                  });
+                final Bitmap bitmap =
+                        Bitmap.createBitmap(frame.getArgb(), frame.getWidth(), frame.getHeight(), Bitmap.Config.ARGB_8888);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        testView.setImageBitmap(bitmap);
+                    }
+                });
                 checkFace(infos, frame);
                 showFrame(frame, infos);
 
@@ -181,7 +181,7 @@ public class RgbDetectActivity extends Activity {
     }
 
     private void checkFace(FaceInfo[] faceInfos, ImageFrame frame) {
-        if (faceInfos != null&&faceInfos.length>0) {
+        if (faceInfos != null && faceInfos.length > 0) {
             FaceInfo faceInfo = faceInfos[0];
             String tip = filter(faceInfo, frame);
             displayTip(tip);
@@ -218,25 +218,25 @@ public class RgbDetectActivity extends Activity {
         } else if (ratio < 0.2) {
             tip = "人脸离屏幕太远，请调整与屏幕的距离";
             return tip;
-        } else if (faceInfo.mCenter_x > width * 3 / 4 ) {
+        } else if (faceInfo.mCenter_x > width * 3 / 4) {
             tip = "人脸在屏幕中太靠右";
             return tip;
-        } else if (faceInfo.mCenter_x < width / 4 ) {
+        } else if (faceInfo.mCenter_x < width / 4) {
             tip = "人脸在屏幕中太靠左";
             return tip;
-        } else if (faceInfo.mCenter_y > height * 3 / 4 ) {
-            tip = "人脸在屏幕中太靠下" ;
+        } else if (faceInfo.mCenter_y > height * 3 / 4) {
+            tip = "人脸在屏幕中太靠下";
             return tip;
-        } else if (faceInfo.mCenter_x < height / 4 ) {
+        } else if (faceInfo.mCenter_x < height / 4) {
             tip = "人脸在屏幕中太靠上";
             return tip;
         }
 
         int liveType = PreferencesUtil.getInt(GlobalSet.TYPE_LIVENSS, GlobalSet
                 .TYPE_NO_LIVENSS);
-        if (liveType ==  GlobalSet.TYPE_NO_LIVENSS) {
+        if (liveType == GlobalSet.TYPE_NO_LIVENSS) {
             saveFace(faceInfo, imageFrame);
-        } else if (liveType ==  GlobalSet.TYPE_RGB_LIVENSS) {
+        } else if (liveType == GlobalSet.TYPE_RGB_LIVENSS) {
             if (rgbLiveness(imageFrame, faceInfo) > 0.9) {
                 saveFace(faceInfo, imageFrame);
             } else {
@@ -250,7 +250,7 @@ public class RgbDetectActivity extends Activity {
 
     private String checkFaceCode(FaceInfo[] faceInfos) {
         String tip = "";
-        if (faceInfos ==null||faceInfos.length<=0 ) {
+        if (faceInfos == null || faceInfos.length <= 0) {
             tip = "未检测到人脸";
         }
         return tip;
@@ -260,7 +260,7 @@ public class RgbDetectActivity extends Activity {
 
         long starttime = System.currentTimeMillis();
         final float rgbScore = FaceSDKManager.getInstance().getFaceLiveness().rgbLiveness(imageFrame.getArgb(), imageFrame
-                        .getWidth(), imageFrame.getHeight(), faceInfo.landmarks);
+                .getWidth(), imageFrame.getHeight(), faceInfo.landmarks);
         final long duration = System.currentTimeMillis() - starttime;
 
         runOnUiThread(new Runnable() {
@@ -299,7 +299,8 @@ public class RgbDetectActivity extends Activity {
                 // 其他来源保存到临时目录
                 final File file = File.createTempFile(UUID.randomUUID().toString() + "", ".jpg");
                 // 人脸识别不需要整张图片。可以对人脸区别进行裁剪。减少流量消耗和，网络传输占用的时间消耗。
-                ImageUtils.resize(bitmap, file, 300, 300);Intent intent = new Intent();
+                ImageUtils.resize(bitmap, file, 300, 300);
+                Intent intent = new Intent();
                 intent.putExtra("file_path", file.getAbsolutePath());
                 setResult(Activity.RESULT_OK, intent);
                 finish();
@@ -327,6 +328,7 @@ public class RgbDetectActivity extends Activity {
             }
         });
     }
+
     private Paint paint = new Paint();
 
     {
@@ -339,7 +341,6 @@ public class RgbDetectActivity extends Activity {
 
     /**
      * 绘制人脸框。
-     *
      */
     private void showFrame(ImageFrame imageFrame, FaceInfo[] faceInfos) {
         Canvas canvas = textureView.lockCanvas();
@@ -363,9 +364,9 @@ public class RgbDetectActivity extends Activity {
         // 检测图片的坐标和显示的坐标不一样，需要转换。
         previewView.mapFromOriginalRect(rectF);
 
-        float yaw  = Math.abs(faceInfo.headPose[0]);
-        float patch  = Math.abs(faceInfo.headPose[1]);
-        float roll  = Math.abs(faceInfo.headPose[2]);
+        float yaw = Math.abs(faceInfo.headPose[0]);
+        float patch = Math.abs(faceInfo.headPose[1]);
+        float roll = Math.abs(faceInfo.headPose[2]);
         if (yaw > 20 || patch > 20 || roll > 20) {
             // 不符合要求，绘制黄框
             paint.setColor(Color.YELLOW);
@@ -465,12 +466,12 @@ public class RgbDetectActivity extends Activity {
         //            left = getInfo().mCenter_x - width / 2;
         //            top = getInfo().mCenter_y - height * 2 / 3;
         left = (int) (faceInfo.mCenter_x - width / 2);
-        top = (int) (faceInfo.mCenter_y - height  / 2);
+        top = (int) (faceInfo.mCenter_y - height / 2);
 
 
         rect.top = top < 0 ? 0 : top;
         rect.left = left < 0 ? 0 : left;
-        rect.right = (left + width) > frame.getWidth() ? frame.getWidth() : (left + width) ;
+        rect.right = (left + width) > frame.getWidth() ? frame.getWidth() : (left + width);
         rect.bottom = (top + height) > frame.getHeight() ? frame.getHeight() : (top + height);
 
         return rect;

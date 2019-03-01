@@ -14,15 +14,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class TCPSocket extends Thread {
-    private static final String TAG = "Socket";
-    private long lastReceiveTime = 0;
-    private static final long TIME_OUT = 60 * 1000; //60s
-    private static final long HEARTBEAT_MESSAGE_DURATION = 50 * 1000; //50s
-    private HeartbeatTimer timer;
+    private static final long HEARTBEAT_MESSAGE_DURATION = 300 * 1000; //50
     private static Socket connectsocket;
     private static String IPAddress;
     private static int Port;
@@ -31,14 +30,21 @@ public class TCPSocket extends Thread {
     private byte[] senddata;
     private int callbacktype;
 
-    private static long INTERVAL_TIME = 15 * 1000;
+    private static boolean first = true;
+    Timer timer = null;
+
+    private static long INTERVAL_TIME = 30 * 1000;//15
+
+
+    TimerTask timerTask;
 
     public TCPSocket(byte[] senddata) {
         this.callbacktype = 1;
         this.senddata = senddata;
     }
 
-    public TCPSocket(Socket socket, String IPAddress, int port, int callbacktype) {
+    public TCPSocket(Socket socket, String IPAddress, int port, int callbacktype, byte[] senddata) {
+        this.senddata = senddata;
         this.connectsocket = socket;
         this.IPAddress = IPAddress;
         this.Port = port;
@@ -48,24 +54,19 @@ public class TCPSocket extends Thread {
 
     @Override
     public void run() {
-        if (callbacktype == 0) {
-            onebyone();
-        } else if (callbacktype == 1) {
-            moretomore();
-        } else if (callbacktype == 2) {
-            equitupload();
+        switch (callbacktype) {
+            case 0:
+                onebyone();
+                break;
+            case 1:
+                moretomore();
+                break;
+            case 2:
+                equitupload();
+                break;
         }
-
     }
 
-    public void stopSocket() {
-        try {
-            connectsocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
 
     /**
      * 一应一答模式（所谓的短连接模式）
@@ -73,7 +74,7 @@ public class TCPSocket extends Thread {
     public void onebyone() {
         buildConnect();   //建立与服务器的连接
         if (isSuccess) {
-            senddata(senddata, connectsocket);
+//            senddata(senddata);
         }
     }
 
@@ -88,11 +89,9 @@ public class TCPSocket extends Thread {
                     break;
                 }
                 if (isSuccess) {
-//                    senddata(senddata, connectsocket);
                     startHeartbeatTimer();
                 }
                 Thread.sleep(INTERVAL_TIME);
-
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -149,6 +148,12 @@ public class TCPSocket extends Thread {
                     if (connectsocket.isConnected() && (!connectsocket.isClosed())) {
                         Log.i("Data", "尝试重新连接成功");
                         isSuccess = true;
+                        //第一次重连
+                        if (first) {
+                            Log.i("first", "success");
+                            senddata(senddata);
+                            first = false;
+                        }
                     } else {
                         Log.i("Data", "尝试重新连接失败");
                         isSuccess = false;
@@ -172,29 +177,20 @@ public class TCPSocket extends Thread {
     /**
      * 发送数据
      **/
-    public void senddata(byte[] senddata, Socket connectsocket1) {
+    public void senddata(byte[] senddata) {
         synchronized (this) {
             try {
-                ByteArrayInputStream byteArrayinputstream = new ByteArrayInputStream(senddata);
-//                Log.i("Data", "read line......" + ByteUtils.bytesToHexString(senddata));
-                if (byteArrayinputstream != null) {
-                    BufferedReader in = new BufferedReader(new InputStreamReader(byteArrayinputstream));
-                    Log.i("Data", "向服务器发送数据,发送时间=" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-
-                    System.out.println("========================88888888888" + "向服务器发送数据,发送时间=");
-                    if (connectsocket1.isClosed()) {
-                        connectsocket1.close();
-                    } else {
-                        connectsocket1.getOutputStream().write(senddata);//发送数据
-//                        getBackData();
-                        Log.i("Data", "获取输出流成功");
-                        System.out.println("========================9999999999" + "获取输出流成功");
-                    }
-
+                Log.i("Data", "向服务器发送数据,发送时间=" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+                System.out.println("========================88888888888" + "向服务器发送数据,发送时间=");
+                if (connectsocket.isClosed()) {
+                    connectsocket.close();
+                } else {
+                    connectsocket.getOutputStream().write(senddata);//发送数据
+                    Log.i("Data", "获取输出流成功");
+                    System.out.println("========================9999999999" + "获取输出流成功");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-
             }
         }
     }
@@ -238,43 +234,29 @@ public class TCPSocket extends Thread {
 
 
     /**
-     * 启动心跳，timer 间隔30秒
+     * 启动心跳，timer 间隔60秒
      */
-    public void startHeartbeatTimer() {
-        timer = new HeartbeatTimer();
-        timer.setOnScheduleListener(new HeartbeatTimer.OnScheduleListener() {
-            @Override
-            public void onSchedule() {
-                Log.d(TAG, "timer is onSchedule...");
-                long duration = System.currentTimeMillis() - lastReceiveTime;
-                Log.d(TAG, "duration:" + duration);
-                if (duration > TIME_OUT) {//若超过60s都没收到我的心跳包，则认为对方不在线。
-                    Log.d(TAG, "超时，对方已经下线");
-                    // 刷新时间，重新进入下一个心跳周期
-                    lastReceiveTime = System.currentTimeMillis();
-                } else if (duration > HEARTBEAT_MESSAGE_DURATION) {//若超过五十秒他没收到我的心跳包，则重新发一个。
-                    senddata(senddata, connectsocket);
-                }
-            }
 
-        });
-        timer.startTimer(1000 * 60, 1000 * 60); //60
+    public void startHeartbeatTimer() {
+        if (timer == null) {
+            timer = new Timer();
+        }
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                senddata(senddata);
+            }
+        };
+        timer.schedule(timerTask, 0, HEARTBEAT_MESSAGE_DURATION);
     }
 
-//    //接收数据
-//    void getBackData() throws IOException {
-//        //接收返回数据
-//        byte[] acceptdata1 = null;
-//        InputStream istream = null;
-//        istream = connectsocket.getInputStream();
-//        int datalength = istream.available();
-//        System.out.println("datalength:" + datalength);
-//        if (datalength > 0) {
-//            acceptdata1 = new byte[datalength];
-//            istream.read(acceptdata1);
-//            System.out.println("TEST:" + EncodingConversionTools.byte2HexStr(acceptdata1));
-//        }
-//    }
+    public void stopSocket() {
+        try {
+            connectsocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }
