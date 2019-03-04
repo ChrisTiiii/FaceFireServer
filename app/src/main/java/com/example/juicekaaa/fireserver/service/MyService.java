@@ -8,10 +8,8 @@ import android.util.Log;
 import com.example.juicekaaa.fireserver.tcp.TCPManager;
 import com.example.juicekaaa.fireserver.utils.GetMac;
 
-import java.net.Socket;
 
 public class MyService extends Service {
-    private Socket socket = new Socket();
     public String SERVICE_IP = "101.132.139.37";//10.101.208.78   10.101.80.134 10.101.80.100 10.101.208.157 10.101.208.157 101.132.139.37
     public int SERVICE_PORT = 23303;//23303
     private String MAC = "";
