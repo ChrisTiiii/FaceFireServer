@@ -21,7 +21,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class TCPSocket extends Thread {
-    private static final long HEARTBEAT_MESSAGE_DURATION = 300 * 1000; //50
+    private static final long HEARTBEAT_MESSAGE_DURATION = 120 * 1000; //50
     private static Socket connectsocket;
     private static String IPAddress;
     private static int Port;

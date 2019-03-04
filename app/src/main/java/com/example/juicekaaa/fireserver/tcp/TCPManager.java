@@ -2,10 +2,9 @@ package com.example.juicekaaa.fireserver.tcp;
 
 /**
  * Author: create by ZhongMing
- * Time: 2019/3/1 0001 14:57
- * Description:Socket 发送和接收消息
+ * Time: 2019/3/4 0004 14:13
+ * Description:
  */
-
 
 import android.util.Log;
 
@@ -28,9 +27,9 @@ import java.net.SocketTimeoutException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class TcpManager {
-
-    private static final String TAG = TcpManager.class.getSimpleName();
+public class TCPManager {
+    private String MAC = "";
+    private static final String TAG = TCPManager.class.getSimpleName();
     /*socket*/
     private Socket socket;
     /*连接线程*/
@@ -52,35 +51,35 @@ public class TcpManager {
     private Timer timer;
     private TimerTask task;
 
-    //心跳周期(s)
-    private int heartCycle = 30;
-    //接收数据长度
+    /* 心跳周期(s)*/
+    private int heartCycle = 300;
+    /*接收数据长度*/
     private int rcvLength;
-    //接收数据
-    private byte[] acceptdata1 = null;
-    private String MAC = "";
+    /*接收数据*/
+    private String rcvMsg;
 
-    private TcpManager() {
+    private TCPManager() {
     }
 
-    private static TcpManager instance;
+    private static TCPManager instance;
 
-    public static synchronized TcpManager getInstance() {
+    public static synchronized TCPManager getInstance() {
         if (instance == null) {
-            synchronized (TcpManager.class) {
-                instance = new TcpManager();
+            synchronized (TCPManager.class) {
+                instance = new TCPManager();
             }
         }
         return instance;
     }
 
-    public TcpManager initSocket(final String ip, final String port) {
+    public TCPManager initSocket(final String ip, final String port) {
         this.ip = ip;
         this.port = port;
+        getMac();
         /* 开启读写线程*/
         threadStatus = true;
         new ReadThread().start();
-        getMac();
+
         if (socket == null && connectThread == null) {
             connectThread = new Thread(new Runnable() {
                 @Override
@@ -120,31 +119,6 @@ public class TcpManager {
         return this;
     }
 
-    /*发送数据*/
-    public void sendData(final String data) {
-        if (socket != null && socket.isConnected()) {
-            /*发送指令*/
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        outputStream = socket.getOutputStream();
-                        if (outputStream != null) {
-                            outputStream.write((data).getBytes("UTF-8"));
-                            outputStream.flush();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }).start();
-
-        } else {
-            Log.e(TAG, "socket连接错误,请重试");
-        }
-    }
-
     /*定时发送数据*/
     private void sendBeatData() {
         if (timer == null) {
@@ -157,9 +131,9 @@ public class TcpManager {
                 public void run() {
                     try {
                         outputStream = socket.getOutputStream();
-                        Log.i(TAG, "发送心跳包");
+                        Log.i(TAG, "发送心跳包:" + EncodingConversionTools.HexString2Bytes(MAC));
                         /*这里的编码方式根据你的需求去改*/
-                        outputStream.write((EncodingConversionTools.HexString2Bytes(MAC)));
+                        outputStream.write(EncodingConversionTools.HexString2Bytes(MAC));
                         outputStream.flush();
                     } catch (Exception e) {
                         /*发送失败说明socket断开了或者出现了其他错误*/
@@ -175,7 +149,7 @@ public class TcpManager {
     }
 
     /*释放资源*/
-    public void releaseSocket() {
+    private void releaseSocket() {
         if (task != null) {
             task.cancel();
             task = null;
@@ -228,7 +202,7 @@ public class TcpManager {
     }
 
     /**
-     * 读取开门返回数据
+     * 读取数据线程
      */
     private class ReadThread extends Thread {
         @Override
@@ -240,11 +214,14 @@ public class TcpManager {
                     try {
                         rcvLength = dis.read(buff);
                         if (rcvLength > 0) {
-                            acceptdata1 = new byte[rcvLength];
-                            inputStream.read(acceptdata1);
-                            System.out.println("接收数据：" + EncodingConversionTools.byte2HexStr(acceptdata1));
+                            rcvMsg = new String(buff, 0, rcvLength, "GBK");
+                            rcvMsg = EncodingConversionTools.str2HexStr(rcvMsg);
                             //接收到数据，切换主线程，显示数据
-                            EventBus.getDefault().post(new MessageEvent(MyApplication.TCP_BACK_DATA, EncodingConversionTools.byte2HexStr(acceptdata1)));
+                            if (onReceiveDataListener != null) {
+                                onReceiveDataListener.onReceiveData(rcvMsg);
+                                System.out.println("accept:" + rcvMsg);
+                                EventBus.getDefault().post(new MessageEvent(MyApplication.TCP_BACK_DATA, rcvMsg));
+                            }
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "接收总控数据异常");
@@ -279,8 +256,17 @@ public class TcpManager {
      * 获取本地mac地址
      * 初始化socket
      */
-    protected void getMac() {
+    public void getMac() {
         MAC = GetMac.getMacAddress().replaceAll(":", "");
         System.out.println("mac: " + MAC);
     }
+
+    public void stopSocket() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.example.juicekaaa.fireserver.broadcast.Receiver;
 import com.example.juicekaaa.fireserver.net.Advertisement;
 import com.example.juicekaaa.fireserver.service.MyService;
+import com.example.juicekaaa.fireserver.tcp.TCPManager;
 import com.example.juicekaaa.fireserver.ui.OpenDoorActivity;
 import com.example.juicekaaa.fireserver.util.FullVideoView;
 import com.example.juicekaaa.fireserver.util.GlideImageLoader;
@@ -40,19 +41,15 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
-import android_serialport_api.SerialPortFinder;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
 public class MainActivity extends AppCompatActivity implements OnBannerListener {
-    //    private static final int PORT = 12342;//接收客户端的监听端口
-//    private static final String CHUAN = "/dev/ttymxc2";
-//    private static final String BOTE = "9600";
+
     @BindView(R.id.open_door)
     LinearLayout openDoor;
     private VideoUtil videoUtil;
@@ -67,8 +64,7 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
     LinearLayout smallprogram;
     @BindView(R.id.signout)
     LinearLayout signout;
-    //    private SerialPortFinder serialPortFinder;
-//    private SerialHelper serialHelper;
+
 
     private Receiver receivera;
     private Receiver receiverb;
@@ -129,8 +125,14 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //初始化串口
-//        initSerial();
+        //触发接收数据接口(不可以删，删掉你啥数据都接收不到了)
+        TCPManager.getInstance().setOnReceiveDataListener(new TCPManager.OnReceiveDataListener() {
+            @Override
+            public void onReceiveData(String str) {
+//                System.out.println("accept2:" + str);
+            }
+        });
+
 //        //设备唯一标识（极光推送）
 //        Context context = getWindow().getContext();
 //        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
@@ -151,18 +153,12 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
             case MyApplication.TCP_BACK_DATA:
                 String order = messageEvent.getMessage();
                 order = order.replaceAll(" ", "");
-                Toast.makeText(MainActivity.this, "收到信息啦！" + order, Toast.LENGTH_LONG).show();
                 if (serial.isOpen()) {
-                    Toast.makeText(this, "开门成功", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "开门成功", Toast.LENGTH_SHORT).show();
                     serial.sendHex(order);
                 } else {
-                    Toast.makeText(this, "串口没打开", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "串口没打开", Toast.LENGTH_SHORT).show();
                 }
-//                if (serialHelper.isOpen()) {
-//                    Toast.makeText(this, "开门成功", Toast.LENGTH_LONG).show();
-//                    serialHelper.sendHex(order);
-//                } else
-//                    Toast.makeText(this, "串口没打开", Toast.LENGTH_LONG).show();
                 break;
             case MyApplication.MESSAGE:// 关闭提示框，播放本地视频
                 videoUtil.setVideo();
@@ -201,35 +197,6 @@ public class MainActivity extends AppCompatActivity implements OnBannerListener 
 
         }
     }
-
-    /**
-     * 初始化串口
-     */
-//    private void initSerial() {
-////        serialPortFinder = new SerialPortFinder();
-//        serialHelper = new SerialHelper() {
-//            @Override
-//            protected void onDataReceived(final ComBean comBean) {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        //接收设备回传数据
-//                        Toast.makeText(getBaseContext(), FuncUtil.ByteArrToHex(comBean.bRec), Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//            }
-//        };
-
-//        try {
-////           设置串口信息
-//            serialHelper.setBaudRate(BOTE);
-//            serialHelper.setPort(CHUAN);
-//            serialHelper.open();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-//    }
 
 
     //播放本地视频，判断本地是否存在视频，没有视频就下载视频
