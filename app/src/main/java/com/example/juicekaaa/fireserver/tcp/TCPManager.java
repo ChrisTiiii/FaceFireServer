@@ -9,9 +9,9 @@ package com.example.juicekaaa.fireserver.tcp;
 import android.util.Log;
 
 import com.example.juicekaaa.fireserver.MyApplication;
-import com.example.juicekaaa.fireserver.util.EncodingConversionTools;
-import com.example.juicekaaa.fireserver.util.GetMac;
-import com.example.juicekaaa.fireserver.util.MessageEvent;
+import com.example.juicekaaa.fireserver.utils.EncodingConversionTools;
+import com.example.juicekaaa.fireserver.utils.GetMac;
+import com.example.juicekaaa.fireserver.utils.MessageEvent;
 
 import org.greenrobot.eventbus.EventBus;
 

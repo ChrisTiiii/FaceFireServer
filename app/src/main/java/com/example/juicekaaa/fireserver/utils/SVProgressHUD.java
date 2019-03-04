@@ -1,4 +1,4 @@
-package com.example.juicekaaa.fireserver.util;
+package com.example.juicekaaa.fireserver.utils;
 
 import android.app.Activity;
 import android.content.Context;

@@ -3,18 +3,14 @@ package com.example.juicekaaa.fireserver.tcp;
 import android.util.Log;
 
 import com.example.juicekaaa.fireserver.MyApplication;
-import com.example.juicekaaa.fireserver.util.EncodingConversionTools;
-import com.example.juicekaaa.fireserver.util.MessageEvent;
+import com.example.juicekaaa.fireserver.utils.EncodingConversionTools;
+import com.example.juicekaaa.fireserver.utils.MessageEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.Socket;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;

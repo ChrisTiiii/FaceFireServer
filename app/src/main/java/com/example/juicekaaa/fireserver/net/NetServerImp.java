@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.example.juicekaaa.fireserver.MyApplication;
-import com.example.juicekaaa.fireserver.util.DownLoadManager;
+import com.example.juicekaaa.fireserver.utils.DownLoadManager;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;

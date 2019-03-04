@@ -29,7 +29,7 @@
             android:scaleType="centerInside"
             android:visibility="gone" />
 
-        <com.example.juicekaaa.fireserver.util.SVCircleProgressBar
+        <com.example.juicekaaa.fireserver.utils.SVCircleProgressBar
             android:id="@+id/circleProgressBar"
             android:layout_width="60dp"
             android:layout_height="60dp"

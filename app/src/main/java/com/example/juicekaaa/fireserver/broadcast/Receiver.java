@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.example.juicekaaa.fireserver.MyApplication;
-import com.example.juicekaaa.fireserver.util.MessageEvent;
+import com.example.juicekaaa.fireserver.utils.MessageEvent;
 
 import org.greenrobot.eventbus.EventBus;
 

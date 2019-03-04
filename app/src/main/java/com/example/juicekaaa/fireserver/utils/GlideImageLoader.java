@@ -1,4 +1,4 @@
-package com.example.juicekaaa.fireserver.util;
+package com.example.juicekaaa.fireserver.utils;
 
 import android.content.Context;
 import android.widget.ImageView;

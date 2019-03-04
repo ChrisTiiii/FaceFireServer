@@ -2,15 +2,9 @@ package com.example.juicekaaa.fireserver.net;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 
 import com.example.juicekaaa.fireserver.MyApplication;
-import com.example.juicekaaa.fireserver.net.NetCallBack;
-import com.example.juicekaaa.fireserver.net.RequestUtils;
-import com.example.juicekaaa.fireserver.net.URLs;
-import com.example.juicekaaa.fireserver.util.MessageEvent;
+import com.example.juicekaaa.fireserver.utils.MessageEvent;
 import com.loopj.android.http.RequestParams;
 
 import org.greenrobot.eventbus.EventBus;

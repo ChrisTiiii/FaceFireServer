@@ -6,7 +6,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.example.juicekaaa.fireserver.tcp.TCPManager;
-import com.example.juicekaaa.fireserver.util.GetMac;
+import com.example.juicekaaa.fireserver.utils.GetMac;
 
 import java.net.Socket;
 

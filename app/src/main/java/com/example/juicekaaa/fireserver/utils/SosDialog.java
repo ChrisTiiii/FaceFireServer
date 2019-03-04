@@ -1,4 +1,4 @@
-package com.example.juicekaaa.fireserver.util;
+package com.example.juicekaaa.fireserver.utils;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -20,7 +20,6 @@ import com.example.juicekaaa.fireserver.R;
 import com.example.juicekaaa.fireserver.net.NetCallBack;
 import com.example.juicekaaa.fireserver.net.RequestUtils;
 import com.example.juicekaaa.fireserver.net.URLs;
-import com.example.juicekaaa.fireserver.util.SVProgressHUD;
 import com.loopj.android.http.RequestParams;
 
 import org.json.JSONException;
